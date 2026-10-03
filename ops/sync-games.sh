@@ -17,6 +17,7 @@ if [ -f /srv/games/deployed-commit ] && [ "$(cat /srv/games/deployed-commit)" = 
     echo "Already deployed $commit"
     exit 0
 fi
+runuser -u games-sync -- python3 /usr/local/lib/rootnode-games/check-ci.py "$commit"
 work=$(mktemp -d "$base/work/build.XXXXXXXX")
 chown games-sync:games-sync "$work"
 trap 'rm -rf -- "$work"' EXIT

@@ -4,7 +4,7 @@ Public catalogue: https://games.rootnode.cv/. Host: `alex@192.168.88.5` (`websrv
 
 ## Daily sync
 
-`rootnode-games-sync.timer` starts `rootnode-games-sync.service` daily at 04:00 UTC with up to 15 minutes randomized delay. `Persistent=true` runs missed updates after a reboot. Only public `https://github.com/glinko/rootnode-games.git`, branch `main`, is fetched. No GitHub token or private SSH key is stored on the sync server.
+`rootnode-games-sync.timer` starts `rootnode-games-sync.service` daily at 04:00 UTC with up to 15 minutes randomized delay. `Persistent=true` runs missed updates after a reboot. Only public `https://github.com/glinko/rootnode-games.git`, branch `main`, is fetched. Before a changed commit can publish, its exact SHA must have a successful catalogue-validation check from GitHub Actions; pending or failed checks leave the running release in place. No GitHub token or private SSH key is stored on the sync server.
 
 Git fetch, source extraction and the static packaging step run as unprivileged `games-sync`. The server uses a separately installed, root-owned validator rather than executing scripts from a contributed checkout. Root then installs an immutable release, switches `/srv/games/current`, restarts `games.service`, and checks HTTP and the level API. If startup or health checks fail, it restores the previous release. An unchanged commit is skipped. A failed build leaves the running release untouched.
 
