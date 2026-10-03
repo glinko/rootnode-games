@@ -1,0 +1,16 @@
+[Unit]
+Description=Publish approved Rootnode games from GitHub main
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/rootnode-games-sync
+TimeoutStartSec=300
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/rootnode-games-sync /srv/games /run
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+UMask=0022

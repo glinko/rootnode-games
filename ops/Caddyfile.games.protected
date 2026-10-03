@@ -1,0 +1,19 @@
+# Rootnode games catalogue. Gameplay is public; level publishing uses Authelia.
+games.rootnode.cv {
+    encode zstd gzip
+    @editor {
+        path /angry-balls/*
+        query editor=1
+    }
+    forward_auth @editor http://192.168.88.14:9091 {
+        uri /api/authz/forward-auth?authelia_url=https://authelia.rootnode.cv/
+    }
+    @level_writes {
+        path /api/hungry-balls/levels*
+        method POST DELETE
+    }
+    forward_auth @level_writes http://192.168.88.14:9091 {
+        uri /api/authz/forward-auth?authelia_url=https://authelia.rootnode.cv/
+    }
+    reverse_proxy 127.0.0.1:8090
+}

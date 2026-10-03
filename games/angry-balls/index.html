@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#d8f5e8">
+  <title>Angry Balls</title>
+  <link rel="stylesheet" href="style.css?v=11">
+  <script defer src="vendor/p5.min.js"></script>
+  <script defer src="game.js?v=11"></script>
+  <script defer src="editor.js?v=11"></script>
+</head>
+<body>
+  <button id="menu-open" aria-label="Открыть меню" aria-haspopup="dialog">☰</button>
+  <main class="app">
+    <div id="editor-top" hidden><input id="level-name" aria-label="Название уровня" maxlength="48" placeholder="Мой уровень"><button id="new-level">Новый</button><button id="library-open">Мои уровни</button></div>
+    <div id="stage"><div id="result" hidden><div class="card"><span id="result-icon">✦</span><h2 id="result-title"></h2><p id="result-copy"></p><button id="again">Ещё раз</button></div></div></div>
+    <section id="editor-tools" hidden aria-label="Инструменты редактора">
+      <div id="tool-strip" role="group" aria-label="Выбрать инструмент"></div>
+      <div id="editor-properties"><label id="brush-control">Кисть <input id="brush-size" type="range" min="8" max="60" value="24"><output id="brush-output">24</output></label><label id="object-size-control" hidden>Размер <input id="object-size" type="range" min="9" max="36" value="17"><output id="object-size-output">17</output></label><label id="laser-control" hidden>Луч <select id="laser-direction"><option value="left">← Влево</option><option value="right">→ Вправо</option><option value="up">↑ Вверх</option><option value="down">↓ Вниз</option></select></label><span id="editor-message" role="status">Рисуй грунт пальцем</span></div>
+      <div class="editor-actions"><button id="editor-undo" aria-label="Отменить последнее действие">↶</button><button id="save-level">Сохранить</button><button id="test-level" class="primary">▶ Проверить</button></div>
+    </section>
+  </main>
+  <dialog id="game-menu" aria-labelledby="page-title"><div class="library-heading"><div><span class="eyebrow">ANGRY BALLS</span><h2 id="page-title">Меню</h2></div><button id="menu-close" aria-label="Закрыть меню">×</button></div><nav class="menu-actions" aria-label="Действия игры"><button id="level-picker">Выбрать уровень <span id="level">УРОВЕНЬ 01</span></button><button id="editor-entry">✎ Редактор</button><button id="editor-exit" hidden>В игру</button><button id="restart">↻ Начать заново</button><a class="catalogue-link" href="/">← Каталог игр</a></nav></dialog>
+  <dialog id="level-library"><div class="library-heading"><h2>Мои уровни</h2><button id="library-close" aria-label="Закрыть">×</button></div><p class="library-note">При сохранении публикуются в игре. Копия остаётся в этом браузере.</p><div id="saved-levels"></div><div class="library-files"><button id="export-level">Экспорт текущего</button><button id="import-level">Импорт файла</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><p id="library-message" role="status"></p></dialog>
+<dialog id="game-levels"><div class="library-heading"><h2>Выбор уровня</h2><button id="game-levels-close" aria-label="Закрыть">×</button></div><div id="game-level-list"></div><p id="game-level-message" role="status"></p></dialog>
+</body>
+</html>

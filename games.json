@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "angry-balls",
+    "title": "Angry Balls",
+    "description": "Прокладывайте путь в сыре, растите и обходите ловушки. Создавайте свои уровни в редакторе.",
+    "category": "Головоломка",
+    "platform": "для телефона",
+    "cover": "cover.svg",
+    "author": "glinko",
+    "license": "MIT"
+  }
+]

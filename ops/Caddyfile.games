@@ -1,0 +1,5 @@
+# Rootnode games catalogue. Editing is temporarily public.
+games.rootnode.cv {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8090
+}

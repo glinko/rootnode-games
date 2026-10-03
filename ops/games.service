@@ -1,0 +1,22 @@
+[Unit]
+Description=Rootnode games catalogue and Angry Balls
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=alex
+Group=alex
+WorkingDirectory=/srv/games/current
+ExecStart=/usr/bin/python3 /srv/games/current/server.py --root /srv/games/current/public --store /srv/games/data/angry-balls-levels.json --host 127.0.0.1 --port 8090
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/games/data
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
