@@ -32,7 +32,7 @@ sudo journalctl -u rootnode-games-sync.service -n 50 --no-pager
 curl -fsS https://games.rootnode.cv/version.json
 ```
 
-The catalogue link **Add your game** leads to CONTRIBUTING.md. GitHub branch protection requires the `catalogue-validation` check, an up-to-date branch and one code-owner approval; force pushes and branch deletion are disabled, including for admins.
+The catalogue link **Add your game** leads to CONTRIBUTING.md. GitHub branch protection requires the `catalogue-validation` check, an up-to-date branch and one code-owner approval; force pushes and branch deletion are disabled. The owner retains the standard administrator bypass for maintaining their own repository; contributors submit reviewed PRs.
 
 To stop future updates: `sudo systemctl disable --now rootnode-games-sync.timer`. To roll back a deployed commit, point `current` to a prior release and restart `games.service`; leave the data file in place. A release that fails health checks is retained with a .failed timestamp suffix, so the next scheduled run can retry. If an interrupted deployment left an already-existing git-<commit> directory, inspect its current symlink and status before a manual retry.
 
