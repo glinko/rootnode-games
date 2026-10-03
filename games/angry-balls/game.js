@@ -70,7 +70,7 @@ function resetLevel(){
   }
   particles=[];trail=0;
   beams=hazards.map(traceLaser);
-  document.querySelector('#result').hidden=true;document.querySelector('#level').textContent=`УРОВЕНЬ ${String(levelIndex+1).padStart(2,'0')}`;
+  document.querySelector('#result').hidden=true;document.querySelector('#level').textContent=`LEVEL ${String(levelIndex+1).padStart(2,'0')}`;
   
 }
 function solid(x,y){if(x<0||x>=W||y<0||y>=H)return false;return ground[Math.floor(y/CELL)*COLS+Math.floor(x/CELL)]===1;}
@@ -312,18 +312,18 @@ function finish(win,reason='hazard'){
   document.querySelector('#result').hidden=resultWait>0;
   document.querySelector('#result-icon').textContent=win?'✦':bombLoss?'💥':reason==='bee'?'🐝':reason==='eaten'?'◉':'ϟ';
   const messages={
-    eaten:['Тебя съели!','Сначала съешь маленьких, чтобы вырасти перед встречей с большим.'],
-    hazard:['Попал под лазер!','Грунт и камни перекрывают луч. Оставь стенку или поставь камень на его пути.'],
-    targetLaser:['Зелёный попал под лазер!','Грунт и камни перекрывают луч. Оставь стенку или поставь камень на его пути.'],
-    bombHero:['Попал под взрыв!','Бомба взорвалась при касании шарика или после сильного падения.'],
-    bombEnemy:['Взрыв задел зелёного!','Для победы все зелёные должны остаться целыми, пока ты их не съешь.'],
-    bee:['Укус пчёлки!','Оставляй камеры с пчёлками закрытыми: через открытый проход они летят к тебе.'],
-    fall:['Упустили шарик!','Оставь немного сыра под шариками, чтобы они не упали за край.'],
-    escaped:['Упустили шарик!','Оставь немного сыра под шариками, чтобы они не упали за край.']
+    eaten:['You got eaten!','Eat smaller balls first to grow before meeting a bigger one.'],
+    hazard:['Hit by a laser!','Cheese and rocks block the beam. Leave a wall or put a rock in its path.'],
+    targetLaser:['An enemy hit a laser!','Cheese and rocks block the beam. Leave a wall or put a rock in its path.'],
+    bombHero:['Caught in an explosion!','Bombs explode on contact with balls, rocks, or lasers, or after a long fall.'],
+    bombEnemy:['An enemy was caught in the blast!','Keep every green ball alive until you eat it to win.'],
+    bee:['Stung by a bee!','Keep bee chambers sealed. Bees fly toward you through open passages.'],
+    fall:['A ball fell out!','Leave some cheese beneath the balls to keep them from falling out.'],
+    escaped:['A ball fell out!','Leave some cheese beneath the balls to keep them from falling out.']
   };
-  const [title,copy]=win?['Вкусная победа!','Все зелёные съедены. Ты стал заметно больше!']:messages[reason];
+  const [title,copy]=win?['A tasty victory!','All green balls eaten. Look how much you have grown!']:messages[reason];
   document.querySelector('#result-title').textContent=title;document.querySelector('#result-copy').textContent=copy;
-  document.querySelector('#again').textContent=editorTesting?'К редактору':win?'Следующий уровень':'Попробовать снова';
+  document.querySelector('#again').textContent=editorTesting?'Back to editor':win?'Next level':'Try again';
 }
 function draw(){
   if(editorMode){drawEditorScene();return;}

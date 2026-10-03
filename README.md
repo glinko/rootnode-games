@@ -1,26 +1,26 @@
 # Rootnode Games
 
-Открытый каталог браузерных игр: **https://games.rootnode.cv/**.
-Сейчас в каталоге Angry Balls с мобильным управлением и редактором уровней.
+An open catalogue of browser games: **https://games.rootnode.cv/**.
+The catalogue currently includes Angry Balls, a mobile game with a level editor.
 
-Любой автор может сделать fork, добавить игру и открыть pull request. После проверки CI, одобрения владельцем и слияния в `main` сервер опубликует игру при ближайшем ежедневном обновлении — между **04:00 и 04:15 UTC**. Изменения из непринятых PR на сервер не попадают.
+Anyone can fork this repository, add a game, and open a pull request. After CI passes, the owner approves the changes, and the PR is merged into `main`, the server publishes the game during the next daily update, between **04:00 and 04:15 UTC**. Unmerged pull requests are not deployed.
 
 ```mermaid
 flowchart LR
-  A[Автор: fork и новая игра] --> B[Pull request]
-  B --> C[Проверки CI и review владельца]
-  C --> D[Merge в main]
-  D --> E[Ежедневная синхронизация]
+  A[Contributor forks and adds a game] --> B[Pull request]
+  B --> C[CI checks and owner review]
+  C --> D[Merge into main]
+  D --> E[Daily synchronization]
   E --> F[games.rootnode.cv]
 ```
 
-## Добавить игру
+## Add a game
 
-Инструкция и формат записи — в [CONTRIBUTING.md](CONTRIBUTING.md). Для старта можно скопировать `templates/game/` в `games/my-game/` и добавить запись в `games.json`. Карточка появляется в каталоге автоматически. Поддерживаются готовые статические HTML/CSS/JavaScript/WebAssembly-игры; сборку своего движка нужно выполнить до PR и включить итоговые браузерные файлы.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for instructions and the catalogue entry format. Start by copying `templates/game/` to `games/my-game/` and adding an entry to `games.json`. The catalogue automatically displays your game card. Ready-to-run static HTML/CSS/JavaScript/WebAssembly games are supported. Build your engine before submitting a PR and include the resulting browser files.
 
-## Локальная проверка
+## Local preview
 
-Требуется Python 3.10+; внешние Python-зависимости не нужны.
+Requires Python 3.10 or newer. No third-party Python packages are needed.
 
 ```sh
 python -m unittest discover -s tests -v
@@ -28,18 +28,18 @@ python scripts/build.py --output dist
 python server/server.py --root dist/public --store .local/levels.json --host 127.0.0.1 --port 8090
 ```
 
-Откройте `http://127.0.0.1:8090/`. Перед повторной сборкой используйте новую выходную директорию либо удалите свою предыдущую `dist/`.
+Open `http://127.0.0.1:8090/`. For another build, use a new output directory or remove your previous `dist/` directory.
 
-## Структура
+## Repository layout
 
-- `games.json` — порядок и карточки игр.
-- `games/<slug>/` — исходные и готовые файлы конкретной игры.
-- `site/` — общая стартовая страница; отображает manifest без правки HTML при добавлении игры.
-- `scripts/build.py` — проверка и упаковка статических файлов.
-- `server/server.py` — статический сервер и API уровней Angry Balls.
-- `ops/` — установка и ежедневная синхронизация, описание развёртывания в [ops/README.md](ops/README.md).
-- `.github/workflows/validate.yml` — CI для PR и main; `.github/CODEOWNERS` — review владельца.
+- `games.json`: game cards and their order.
+- `games/<slug>/`: source and browser files for each game.
+- `site/`: the shared landing page, which reads the manifest without requiring HTML changes for new games.
+- `scripts/build.py`: static file validation and packaging.
+- `server/server.py`: static server and the Angry Balls level API.
+- `ops/`: installation and daily synchronization; see [ops/README.md](ops/README.md) for deployment instructions.
+- `.github/workflows/validate.yml`: CI for pull requests and main; `.github/CODEOWNERS`: owner review.
 
-Пользовательские уровни не хранятся в Git: на рабочем сервере они находятся в `/srv/games/data/angry-balls-levels.json`. Обновление игр не заменяет этот файл. Редактор сейчас открыт всем по решению владельца; конфигурация возвращения защиты сохранена в `ops/Caddyfile.games.protected`.
+User-created levels are stored outside Git, at `/srv/games/data/angry-balls-levels.json` on the production server. Game updates preserve this file. The editor is currently open to everyone at the owner's request. The configuration for restoring authentication is saved in `ops/Caddyfile.games.protected`.
 
-Лицензия собственного кода: MIT. Игры и сторонние библиотеки сохраняют свои лицензии; p5.js 1.9.4 распространяется вместе с LGPL-2.1 и ссылкой на исходный код.
+Project code is licensed under MIT. Games and third-party libraries retain their own licenses. The bundled p5.js 1.9.4 includes its LGPL-2.1 license and a link to its source code.

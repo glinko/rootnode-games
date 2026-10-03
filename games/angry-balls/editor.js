@@ -3,31 +3,31 @@ const LEVELS_KEY='hungry-balls.levels.v1',DRAFT_KEY='hungry-balls.draft.v1';
 const SELECTED_KEY='hungry-balls.selected.v1';
 let levelCatalogue=[],selectedLevelId='builtin-1',catalogueLoaded=false;
 const builtinIndex=id=>/^builtin-[1-3]$/.test(id)?Number(id.slice(-1))-1:-1;
-const TOOLS=[['move','✥','Двигать'],['paint','▧','Сыр'],['erase','◯','Стереть'],['hero','◉','Герой'],['enemy','●','Враг'],['rock','⬟','Камень'],['bomb','✹','Бомба'],['laser','↤','Лазер'],['hive','🐝','Пчёлы'],['delete','×','Удалить']];
+const TOOLS=[['move','✥','Move'],['paint','▧','Cheese'],['erase','◯','Erase'],['hero','◉','Hero'],['enemy','●','Enemy'],['rock','⬟','Rock'],['bomb','✹','Bomb'],['laser','↤','Laser'],['hive','🐝','Bees'],['delete','×','Delete']];
 let draft=null,draftId=null,draftBase=null,editorTool='move',editorSelection=null,editorUndo=[],editorDrag=null,editorChanged=false,returnLevel=null,returnIndex=0;
 const el=id=>document.getElementById(id);
 function packTerrain(map=ground){const bytes=new Uint8Array(Math.ceil(map.length/8));for(let i=0;i<map.length;i++)if(map[i])bytes[i>>3]|=1<<(i&7);return btoa(String.fromCharCode(...bytes));}
 function unpackTerrain(encoded){
-  if(typeof encoded!=='string'||encoded.length!==Math.ceil(Math.ceil(COLS*ROWS/8)/3)*4||!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded))throw Error('Некорректный грунт в файле.');
-  const raw=atob(encoded);if(raw.length!==Math.ceil(COLS*ROWS/8))throw Error('Некорректный размер грунта.');
+  if(typeof encoded!=='string'||encoded.length!==Math.ceil(Math.ceil(COLS*ROWS/8)/3)*4||!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded))throw Error('Invalid terrain data in the file.');
+  const raw=atob(encoded);if(raw.length!==Math.ceil(COLS*ROWS/8))throw Error('Invalid terrain size.');
   const map=new Uint8Array(COLS*ROWS);for(let i=0;i<map.length;i++)map[i]=(raw.charCodeAt(i>>3)>>(i&7))&1;return map;
 }
 function validateLevelData(raw){
-  if(!raw||raw.version!==1||raw.width!==W||raw.height!==H||raw.cell!==CELL)throw Error('Этот файл не подходит к редактору.');
+  if(!raw||raw.version!==1||raw.width!==W||raw.height!==H||raw.cell!==CELL)throw Error('This file is not compatible with the editor.');
   unpackTerrain(raw.terrain);
-  const number=(v,min,max)=>{if(typeof v!=='number'||!Number.isFinite(v)||v<min||v>max)throw Error('В файле есть недопустимый размер или координата.');return v;};
-  const point=(v,r)=>{if(!v||typeof v!=='object')throw Error('Некорректный объект.');return{x:number(v.x,r,W-r),y:number(v.y,r,H-r)};};
+  const number=(v,min,max)=>{if(typeof v!=='number'||!Number.isFinite(v)||v<min||v>max)throw Error('The file contains an invalid size or coordinate.');return v;};
+  const point=(v,r)=>{if(!v||typeof v!=='object')throw Error('Invalid object.');return{x:number(v.x,r,W-r),y:number(v.y,r,H-r)};};
   const circle=(v,min,max)=>{const r=number(v?.r,min,max);return{...point(v,r),r};};
-  const list=(values,limit,fn)=>{if(!Array.isArray(values)||values.length>limit)throw Error('Слишком много объектов в уровне.');return values.map(fn);};
+  const list=(values,limit,fn)=>{if(!Array.isArray(values)||values.length>limit)throw Error('Too many objects in this level.');return values.map(fn);};
   const hero=circle(raw.hero,9,36);
-  return{version:1,width:W,height:H,cell:CELL,name:typeof raw.name==='string'?raw.name.trim().slice(0,48)||'Мой уровень':'Мой уровень',terrain:raw.terrain,hero,
+  return{version:1,width:W,height:H,cell:CELL,name:typeof raw.name==='string'?raw.name.trim().slice(0,48)||'My level':'My level',terrain:raw.terrain,hero,
     targets:list(raw.targets,20,v=>circle(v,9,36)),rocks:list(raw.rocks,16,v=>circle(v,12,34)),bombs:list(raw.bombs,12,v=>point(v,13)),
-    lasers:list(raw.lasers,12,v=>{if(!['left','right','up','down'].includes(v?.direction))throw Error('Некорректное направление лазера.');return{...point(v,13),direction:v.direction};}),
+    lasers:list(raw.lasers,12,v=>{if(!['left','right','up','down'].includes(v?.direction))throw Error('Invalid laser direction.');return{...point(v,13),direction:v.direction};}),
     hives:list(raw.hives,4,v=>({...point(v,24),r:24}))};
 }
-function captureLevelData(name=el('level-name').value||'Мой уровень'){
+function captureLevelData(name=el('level-name').value||'My level'){
   const circle=b=>({x:b.x,y:b.y,r:b.r}),point=b=>({x:b.x,y:b.y});
-  return{version:1,width:W,height:H,cell:CELL,name:name.trim().slice(0,48)||'Мой уровень',terrain:packTerrain(),hero:circle(ball),targets:targets.map(circle),rocks:rocks.map(circle),bombs:bombs.map(point),lasers:hazards.map(h=>({...point(h),direction:h.dx<0?'left':h.dx>0?'right':h.dy<0?'up':'down'})),hives:hives.map(circle)};
+  return{version:1,width:W,height:H,cell:CELL,name:name.trim().slice(0,48)||'My level',terrain:packTerrain(),hero:circle(ball),targets:targets.map(circle),rocks:rocks.map(circle),bombs:bombs.map(point),lasers:hazards.map(h=>({...point(h),direction:h.dx<0?'left':h.dx>0?'right':h.dy<0?'up':'down'})),hives:hives.map(circle)};
 }
 function renderGridTerrain(){
   terrain.clear();terrain.noStroke();terrain.fill('#f9d64d');terrain.drawingContext.save();const shape=new Path2D();
@@ -56,9 +56,9 @@ function circleClearInMap(map,b){
 }
 function validateForPlay(source){
   const data=validateLevelData(source),map=unpackTerrain(data.terrain);
-  if(!data.targets.length)throw Error('Добавь хотя бы одного зелёного врага.');
-  for(const b of [data.hero,...data.targets,...data.rocks,...data.bombs.map(b=>({...b,r:13}))])if(!circleClearInMap(map,b))throw Error('Объект оказался в грунте. Сотри вокруг него немного сыра.');
-  for(const hive of data.hives)for(let i=0;i<4;i++)if(!circleClearInMap(map,{x:hive.x+(i%2?8:-8),y:hive.y+(i<2?-8:8),r:BEE_R+.3}))throw Error('В камере пчёл есть грунт. Освободи её внутри.');
+  if(!data.targets.length)throw Error('Add at least one green enemy.');
+  for(const b of [data.hero,...data.targets,...data.rocks,...data.bombs.map(b=>({...b,r:13}))])if(!circleClearInMap(map,b))throw Error('An object is inside the terrain. Erase some cheese around it.');
+  for(const hive of data.hives)for(let i=0;i<4;i++)if(!circleClearInMap(map,{x:hive.x+(i%2?8:-8),y:hive.y+(i<2?-8:8),r:BEE_R+.3}))throw Error('The bee chamber contains terrain. Clear its interior.');
   return data;
 }
 function initEditor(){
@@ -76,28 +76,28 @@ function initEditor(){
 function editorMessage(message){el('editor-message').textContent=message;}
 function showEditorUI(show){
   document.body.classList.toggle('editing',show);for(const id of ['editor-top','editor-tools','editor-exit'])el(id).hidden=!show;
-  el('page-title').textContent=show?'Редактор уровней':'Меню';el('editor-entry').textContent=editorTesting?'✎ К редактору':'✎ Редактор';
+  el('page-title').textContent=show?'Level editor':'Menu';el('editor-entry').textContent=editorTesting?'✎ Back to editor':'✎ Editor';
 }
 function openEditor(){
   if(!editorTesting){
     returnLevel=activeCustomLevel;returnIndex=levelIndex;
     const id=activeCustomLevel?selectedLevelId:'builtin-'+(levelIndex+1);selectedLevelId=id;
-    resetLevel();draft=captureLevelData(activeCustomLevel?.name||levelCatalogue.find(row=>row.id===id)?.level?.name||'Уровень '+(levelIndex+1));draftId=id;draftBase=JSON.stringify(draft);
+    resetLevel();draft=captureLevelData(activeCustomLevel?.name||levelCatalogue.find(row=>row.id===id)?.level?.name||'Level '+(levelIndex+1));draftId=id;draftBase=JSON.stringify(draft);
     try{const saved=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');if(saved?.id===id&&saved.base===draftBase)draft=validateLevelData(saved.level);}catch{}
     editorUndo=[];el('editor-undo').disabled=true;
   }
-  editorMode=true;editorTesting=false;activePointer=null;lastPoint=null;loadLevelData(draft);repairObjectPockets();el('level-name').value=draft.name;persistDraft();editorSelection=null;showEditorUI(true);chooseEditorTool(editorTool);editorMessage('Выбери инструмент. Ленту можно листать.');
+  editorMode=true;editorTesting=false;activePointer=null;lastPoint=null;loadLevelData(draft);repairObjectPockets();el('level-name').value=draft.name;persistDraft();editorSelection=null;showEditorUI(true);chooseEditorTool(editorTool);editorMessage('Choose a tool. Swipe the toolbar to see more.');
 }
 function closeEditor(){history.replaceState(null,'',location.pathname);persistDraft();editorMode=false;editorTesting=false;activeCustomLevel=returnLevel;levelIndex=returnIndex;showEditorUI(false);resetLevel();}
 function pushEditorUndo(){editorUndo.push({level:captureLevelData(),id:draftId,base:draftBase});if(editorUndo.length>25)editorUndo.shift();el('editor-undo').disabled=false;}
-function undoEditor(){if(!editorUndo.length)return;const previous=editorUndo.pop();draft=previous.level;draftId=previous.id;draftBase=previous.base;loadLevelData(draft);el('level-name').value=draft.name;editorSelection=null;el('editor-undo').disabled=!editorUndo.length;persistDraft();editorMessage('Последнее действие отменено.');updateEditorProperties();}
+function undoEditor(){if(!editorUndo.length)return;const previous=editorUndo.pop();draft=previous.level;draftId=previous.id;draftBase=previous.base;loadLevelData(draft);el('level-name').value=draft.name;editorSelection=null;el('editor-undo').disabled=!editorUndo.length;persistDraft();editorMessage('Last action undone.');updateEditorProperties();}
 function persistDraft(){
-  if(!editorMode)return;repairObjectPockets();draft=captureLevelData();try{localStorage.setItem(DRAFT_KEY,JSON.stringify({id:draftId,base:draftBase,level:draft}));}catch{editorMessage('Не удалось сохранить черновик в браузере. Используй экспорт.');}
+  if(!editorMode)return;repairObjectPockets();draft=captureLevelData();try{localStorage.setItem(DRAFT_KEY,JSON.stringify({id:draftId,base:draftBase,level:draft}));}catch{editorMessage('Could not save the draft in this browser. Export it instead.');}
 }
 function chooseEditorTool(tool){
   editorTool=tool;for(const button of el('tool-strip').children)button.setAttribute('aria-pressed',String(button.dataset.tool===tool));
   const defaults={hero:17,enemy:15,rock:22};if(defaults[tool]){el('object-size').value=defaults[tool];el('object-size-output').textContent=defaults[tool];}
-  updateEditorProperties();const hints={move:'Перетаскивай объекты пальцем.',paint:'Рисуй сыр пальцем.',erase:'Проведи пальцем, чтобы стереть сыр.',hero:'Коснись поля: герой будет здесь.',enemy:'Коснись поля: добавится враг.',rock:'Коснись поля: добавится камень.',bomb:'Коснись поля: добавится бомба.',laser:'Коснись поля и потяни палец в сторону луча.',hive:'Коснись сыра: появится камера с пчёлами.',delete:'Коснись объекта, чтобы удалить его.'};editorMessage(hints[tool]);
+  updateEditorProperties();const hints={move:'Drag objects with your finger.',paint:'Draw cheese with your finger.',erase:'Swipe to erase cheese.',hero:'Tap the field to place the hero.',enemy:'Tap the field to add an enemy.',rock:'Tap the field to add a rock.',bomb:'Tap the field to add a bomb.',laser:'Tap to place a laser, then drag in the beam direction.',hive:'Tap the cheese to add a bee chamber.',delete:'Tap an object to delete it.'};editorMessage(hints[tool]);
 }
 function updateEditorProperties(){
   const kind=editorTool==='move'?editorSelection?.type:editorTool;
@@ -123,16 +123,16 @@ function paintEditorGround(a,b,r){
 }
 function editorPointerDown(event,canvas){
   const q=worldPoint(event);activePointer=event.pointerId;lastPoint=q;canvas.setPointerCapture(event.pointerId);editorChanged=false;editorDrag=null;event.preventDefault();
-  if(editorTool==='move'){editorSelection=pickEditorObject(q);if(editorSelection){pushEditorUndo();editorDrag={dx:q.x-editorSelection.object.x,dy:q.y-editorSelection.object.y};updateEditorProperties();}else editorMessage('Коснись объекта, чтобы переместить его.');return;}
+  if(editorTool==='move'){editorSelection=pickEditorObject(q);if(editorSelection){pushEditorUndo();editorDrag={dx:q.x-editorSelection.object.x,dy:q.y-editorSelection.object.y};updateEditorProperties();}else editorMessage('Tap an object to move it.');return;}
   if(editorTool==='delete'){
-    const picked=pickEditorObject(q);if(!picked)return;if(picked.type==='hero'){editorMessage('Герой нужен уровню. Его можно переместить.');return;}pushEditorUndo();
+    const picked=pickEditorObject(q);if(!picked)return;if(picked.type==='hero'){editorMessage('Every level needs a hero. You can move it.');return;}pushEditorUndo();
     const arrays={enemy:targets,rock:rocks,bomb:bombs,laser:hazards,hive:hives};arrays[picked.type].splice(arrays[picked.type].indexOf(picked.object),1);refreshHiveBees();editorSelection=null;editorChanged=true;return;
   }
   pushEditorUndo();editorChanged=true;
   if(editorTool==='paint'){paintEditorGround(q,q,+el('brush-size').value);return;}
   if(editorTool==='erase'){dig(q,q,+el('brush-size').value);particles=[];return;}
   const limits={enemy:20,rock:16,bomb:12,laser:12,hive:4},arrays={enemy:targets,rock:rocks,bomb:bombs,laser:hazards,hive:hives};
-  if(limits[editorTool]&&arrays[editorTool].length>=limits[editorTool]){editorMessage('Для этого объекта достигнут лимит.');return;}
+  if(limits[editorTool]&&arrays[editorTool].length>=limits[editorTool]){editorMessage('The limit for this object type has been reached.');return;}
   const r=['hero','enemy','rock'].includes(editorTool)?+el('object-size').value:editorTool==='hive'?24:13,p=keepInWorld(q,r);let object;
   if(editorTool==='hero'){ball=makeCreature(p.x,p.y,r,true);object=ball;}
   if(editorTool==='enemy'){object=makeCreature(p.x,p.y,r);targets.push(object);}
@@ -163,7 +163,7 @@ function resizeEditorSelection(){
 function rotateEditorSelection(){if(editorTool==='move'&&editorSelection?.type==='laser'){pushEditorUndo();const dir={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]}[el('laser-direction').value];editorSelection.object.dx=dir[0];editorSelection.object.dy=dir[1];persistDraft();}}
 function newEditorLevel(){
   pushEditorUndo();const map=new Uint8Array(COLS*ROWS);for(let y=225;y<ROWS;y++)for(let x=0;x<COLS;x++)map[y*COLS+x]=1;
-  draft={version:1,width:W,height:H,cell:CELL,name:'Новый уровень',terrain:packTerrain(map),hero:{x:95,y:100,r:17},targets:[{x:280,y:662,r:13}],rocks:[],bombs:[],lasers:[],hives:[]};draftId=null;draftBase=null;loadLevelData(draft);el('level-name').value=draft.name;editorSelection=null;persistDraft();editorMessage('Нарисуй платформы и расставь объекты.');updateEditorProperties();
+  draft={version:1,width:W,height:H,cell:CELL,name:'New level',terrain:packTerrain(map),hero:{x:95,y:100,r:17},targets:[{x:280,y:662,r:13}],rocks:[],bombs:[],lasers:[],hives:[]};draftId=null;draftBase=null;loadLevelData(draft);el('level-name').value=draft.name;editorSelection=null;persistDraft();editorMessage('Draw platforms and place objects.');updateEditorProperties();
 }
 function testEditorLevel(){
   try{persistDraft();const data=validateForPlay(draft);activeCustomLevel=data;editorTesting=true;editorMode=false;showEditorUI(false);resetLevel();editorMessage('');}
@@ -172,21 +172,21 @@ function testEditorLevel(){
 function savedLevels(){try{const values=JSON.parse(localStorage.getItem(LEVELS_KEY)||'[]');if(!Array.isArray(values))return[];return values.slice(0,30).flatMap(row=>{try{return typeof row.id==='string'?[{id:row.id,level:validateLevelData(row.level)}]:[];}catch{return[];}});}catch{return[];}}
 async function saveEditorLevel(){
   try{persistDraft();const level=validateForPlay(draft),list=savedLevels();if(!draftId)draftId=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
-    const index=list.findIndex(row=>row.id===draftId),row={id:draftId,level};if(index>=0)list[index]=row;else{if(list.length>=30)throw Error('Сохранено 30 уровней. Удали один или используй экспорт.');list.push(row);}localStorage.setItem(LEVELS_KEY,JSON.stringify(list));draftBase=JSON.stringify(level);persistDraft();levelCatalogue=mergeCatalogue(levelCatalogue.filter(v=>v.level&&v.id!==draftId));selectedLevelId=draftId;localStorage.setItem(SELECTED_KEY,draftId);returnLevel=builtinIndex(draftId)>=0?null:level;returnIndex=builtinIndex(draftId)>=0?builtinIndex(draftId):levelIndex;editorMessage('Публикую уровень…');await publishLevel(row);await refreshCatalogue();editorMessage('Сохранено и добавлено в выбор уровней игры.');
-  }catch(error){editorMessage(error.name==='QuotaExceededError'?'Память браузера заполнена. Используй экспорт.':error.message);}
+    const index=list.findIndex(row=>row.id===draftId),row={id:draftId,level};if(index>=0)list[index]=row;else{if(list.length>=30)throw Error('You have saved 30 levels. Delete one or export this level.');list.push(row);}localStorage.setItem(LEVELS_KEY,JSON.stringify(list));draftBase=JSON.stringify(level);persistDraft();levelCatalogue=mergeCatalogue(levelCatalogue.filter(v=>v.level&&v.id!==draftId));selectedLevelId=draftId;localStorage.setItem(SELECTED_KEY,draftId);returnLevel=builtinIndex(draftId)>=0?null:level;returnIndex=builtinIndex(draftId)>=0?builtinIndex(draftId):levelIndex;editorMessage('Publishing level…');await publishLevel(row);await refreshCatalogue();editorMessage('Saved and added to the level selection.');
+  }catch(error){editorMessage(error.name==='QuotaExceededError'?'Browser storage is full. Export this level instead.':error.message);}
 }
 function renderLibrary(){
   el('saved-levels').replaceChildren();el('library-message').textContent='';const levels=savedLevels();
-  if(!levels.length){const p=document.createElement('p');p.textContent='Здесь появятся сохранённые уровни.';p.className='library-note';el('saved-levels').append(p);}
+  if(!levels.length){const p=document.createElement('p');p.textContent='Your saved levels will appear here.';p.className='library-note';el('saved-levels').append(p);}
   for(const row of levels){const wrap=document.createElement('div');wrap.className='saved-row';const name=document.createElement('strong');name.textContent=row.level.name;const actions=document.createElement('div');
-    for(const [label,action] of [['Открыть',()=>{pushEditorUndo();draft=row.level;draftId=row.id;loadLevelData(draft);el('level-name').value=draft.name;editorSelection=null;persistDraft();updateEditorProperties();el('level-library').close();}],['Играть',()=>{try{activeCustomLevel=validateForPlay(row.level);draft=row.level;draftId=row.id;loadLevelData(draft);el('level-name').value=draft.name;persistDraft();editorTesting=false;editorMode=false;showEditorUI(false);el('level-library').close();levelCatalogue=mergeCatalogue(levelCatalogue.filter(v=>v.level));selectGameLevel(row.id);}catch(error){el('library-message').textContent=error.message;}}],['Удалить',async()=>{try{await levelRequest('/'+encodeURIComponent(row.id),{method:'DELETE'});localStorage.setItem(LEVELS_KEY,JSON.stringify(savedLevels().filter(v=>v.id!==row.id)));if(draftId===row.id){draftId=null;persistDraft();}await refreshCatalogue();renderLibrary();}catch{el('library-message').textContent='Не удалось удалить уровень.';}}]]){const button=document.createElement('button');button.textContent=label;button.onclick=action;actions.append(button);}wrap.append(name,actions);el('saved-levels').append(wrap);}
+    for(const [label,action] of [['Open',()=>{pushEditorUndo();draft=row.level;draftId=row.id;loadLevelData(draft);el('level-name').value=draft.name;editorSelection=null;persistDraft();updateEditorProperties();el('level-library').close();}],['Play',()=>{try{activeCustomLevel=validateForPlay(row.level);draft=row.level;draftId=row.id;loadLevelData(draft);el('level-name').value=draft.name;persistDraft();editorTesting=false;editorMode=false;showEditorUI(false);el('level-library').close();levelCatalogue=mergeCatalogue(levelCatalogue.filter(v=>v.level));selectGameLevel(row.id);}catch(error){el('library-message').textContent=error.message;}}],['Delete',async()=>{try{await levelRequest('/'+encodeURIComponent(row.id),{method:'DELETE'});localStorage.setItem(LEVELS_KEY,JSON.stringify(savedLevels().filter(v=>v.id!==row.id)));if(draftId===row.id){draftId=null;persistDraft();}await refreshCatalogue();renderLibrary();}catch{el('library-message').textContent='Could not delete the level.';}}]]){const button=document.createElement('button');button.textContent=label;button.onclick=action;actions.append(button);}wrap.append(name,actions);el('saved-levels').append(wrap);}
 }
 function exportEditorLevel(){
-  persistDraft();const data=validateLevelData(draft),url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download=(data.name.replace(/[^\p{L}\p{N}_-]+/gu,'-')||'level')+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);el('library-message').textContent='Файл уровня подготовлен.';
+  persistDraft();const data=validateLevelData(draft),url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download=(data.name.replace(/[^\p{L}\p{N}_-]+/gu,'-')||'level')+'.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);el('library-message').textContent='Level file ready.';
 }
 async function importEditorLevel(file){
-  if(!file)return;try{if(file.size>200000)throw Error('Файл слишком большой.');const data=validateLevelData(JSON.parse(await file.text()));pushEditorUndo();draft=data;draftId=null;draftBase=null;loadLevelData(draft);el('level-name').value=draft.name;editorSelection=null;persistDraft();updateEditorProperties();el('level-library').close();editorMessage('Импортировано. Можно проверить и сохранить.');}
-  catch(error){el('library-message').textContent=error instanceof SyntaxError?'Не удалось прочитать JSON-файл.':error.message;}finally{el('import-file').value='';}
+  if(!file)return;try{if(file.size>200000)throw Error('The file is too large.');const data=validateLevelData(JSON.parse(await file.text()));pushEditorUndo();draft=data;draftId=null;draftBase=null;loadLevelData(draft);el('level-name').value=draft.name;editorSelection=null;persistDraft();updateEditorProperties();el('level-library').close();editorMessage('Imported. You can test and save this level.');}
+  catch(error){el('library-message').textContent=error instanceof SyntaxError?'Could not read the JSON file.':error.message;}finally{el('import-file').value='';}
 }
 function drawEditorScene(){
   clockTime+=Math.min(deltaTime/1000,.05);background('#c9f4e6');image(terrain,0,0);
@@ -197,8 +197,8 @@ function drawEditorScene(){
 async function levelRequest(path='',options={}){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
   try{const response=await fetch('/api/hungry-balls/levels'+path,{...options,signal:controller.signal,cache:'no-store',headers:{'Content-Type':'application/json'}});
-    if(!response.ok)throw Error('Не удалось сохранить уровень на сервере.');return await response.json();
-  }catch{throw Error('Сервер недоступен. Копия уровня сохранена в браузере.');}finally{clearTimeout(timer);}
+    if(!response.ok)throw Error('Could not save the level on the server.');return await response.json();
+  }catch{throw Error('The server is unavailable. A copy of the level is saved in this browser.');}finally{clearTimeout(timer);}
 }
 async function publishLevel(row){await levelRequest('',{method:'POST',body:JSON.stringify(row)});}
 function mergeCatalogue(shared){
@@ -222,7 +222,7 @@ async function advanceGameLevel(){
   el('again').disabled=true;await refreshCatalogue();const index=levelCatalogue.findIndex(row=>row.id===selectedLevelId);selectGameLevel(levelCatalogue[(index+1)%levelCatalogue.length].id);el('again').disabled=false;
 }
 async function openGameLevels(){
-  const dialog=el('game-levels'),list=el('game-level-list');list.replaceChildren();el('game-level-message').textContent='Загружаю уровни…';dialog.showModal();
-  const online=await refreshCatalogue();el('game-level-message').textContent=online?'Выбери уровень.':'Сервер недоступен. Доступны уровни этого браузера.';
-  for(const row of levelCatalogue){const button=document.createElement('button');button.className='game-level-row';button.textContent=row.level?.name||'Уровень '+(builtinIndex(row.id)+1);button.onclick=()=>{selectGameLevel(row.id);dialog.close();};list.append(button);}
+  const dialog=el('game-levels'),list=el('game-level-list');list.replaceChildren();el('game-level-message').textContent='Loading levels…';dialog.showModal();
+  const online=await refreshCatalogue();el('game-level-message').textContent=online?'Choose a level.':'The server is unavailable. Levels saved in this browser are available.';
+  for(const row of levelCatalogue){const button=document.createElement('button');button.className='game-level-row';button.textContent=row.level?.name||'Level '+(builtinIndex(row.id)+1);button.onclick=()=>{selectGameLevel(row.id);dialog.close();};list.append(button);}
 }

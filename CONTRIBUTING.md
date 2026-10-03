@@ -32,5 +32,6 @@ Anyone can fork this public repository and submit a pull request. A game becomes
 - No symlinks, hidden files, credentials, environment files or runtime level databases. Publish only assets you have permission to distribute.
 - Disclose external services in the PR; games should work from their own URL prefix and must not register service workers above their own game path.
 - Use touch-friendly controls and make replay/start controls usable without a desktop keyboard.
+- Use English for game interfaces, catalogue descriptions, and repository documentation. Players can name their own levels in any language.
 
 Manifest validation checks packaging, paths, file sizes and required files. It cannot replace a human gameplay or source review. Backend or deployment changes require a separate reviewed operations update; daily sync publishes static game files only.

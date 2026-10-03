@@ -35,7 +35,7 @@ def validate(row):
             result['r'] = r
         return result
     result = {'version': 1, 'width': 390, 'height': 700, 'cell': 3, 'terrain': encoded,
-              'name': str(data.get('name', ''))[:48].strip() or 'Мой уровень', 'hero': circle(data.get('hero'), 9, 36)}
+              'name': str(data.get('name', ''))[:48].strip() or 'My level', 'hero': circle(data.get('hero'), 9, 36)}
     for key, limit, lo, hi, fixed in [('targets', 20, 9, 36, None), ('rocks', 16, 12, 34, None),
                                      ('bombs', 12, 0, 0, 13), ('lasers', 12, 0, 0, 13), ('hives', 4, 0, 0, 24)]:
         values = data.get(key)
