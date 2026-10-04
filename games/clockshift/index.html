@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#092731">
+  <title>ClockShift</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="vendor/p5.min.js"></script>
+  <script defer src="game.js"></script>
+</head>
+<body>
+  <main class="app">
+    <header class="hud">
+      <div class="brand"><span class="eyebrow">ROOTNODE ARCADE</span><h1>ClockShift</h1></div>
+      <div class="level-copy"><span id="level-number">TRAINING 01</span><strong id="level-title">Loading…</strong></div>
+      <div class="hud-actions">
+        <span id="timer" aria-label="Elapsed time">00:00.0</span>
+        <button id="pause" class="icon-button" type="button" aria-label="Pause">Ⅱ</button>
+        <button id="restart" class="icon-button" type="button" aria-label="Restart">↻</button>
+      </div>
+    </header>
+    <p id="hint" class="hint">Loading the training campaign…</p>
+    <section id="stage" aria-label="ClockShift game board"></section>
+    <section class="actions" aria-label="Game actions">
+      <button id="reverse" class="action" type="button"><span class="action-icon">⟳</span><span>Reverse</span><small>A · charge <b id="charges">1</b></small></button>
+      <button id="release" class="action" type="button"><span class="action-icon">↘</span><span>Release</span><small>S · free flight</small></button>
+      <button id="capture" class="action" type="button"><span class="action-icon">⌁</span><span>Capture</span><small>D · next hinge</small></button>
+    </section>
+    <footer class="footer-bar">
+      <button id="previous" class="small-button" type="button" aria-label="Previous level">‹</button>
+      <span id="mode-label">TRAINING · 1 / 10</span>
+      <button id="next" class="small-button" type="button" aria-label="Next level">›</button>
+      <button id="levels-open" class="levels-button" type="button">Levels</button>
+      <a id="editor-open" class="levels-button editor-button" href="editor.html">Editor</a>
+    </footer>
+  </main>
+  <dialog id="levels-dialog">
+    <div class="dialog-head"><div><span class="eyebrow">CLOCKSHIFT</span><h2>Training levels</h2></div><button id="levels-close" class="close-button" type="button" aria-label="Close">×</button></div>
+    <div id="level-list" class="level-list"></div>
+    <p class="dialog-note">A and D are edge-triggered actions. In free flight, the nearest hinge captures automatically.</p>
+  </dialog>
+  <div id="result" class="result" hidden>
+    <div class="result-card"><span id="result-glyph">✦</span><h2 id="result-title">Level complete</h2><p id="result-copy"></p><button id="result-button" class="primary-button" type="button">Next level</button></div>
+  </div>
+</body>
+</html>

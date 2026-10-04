@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "training_02",
+  "title": "02 · The rotating clock",
+  "bounds": {
+    "minX": -4,
+    "minY": -3,
+    "maxX": 5,
+    "maxY": 4
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "x": -3,
+      "y": -2
+    },
+    {
+      "id": "n2",
+      "x": -2,
+      "y": -2
+    },
+    {
+      "id": "n3",
+      "x": -2,
+      "y": -1
+    },
+    {
+      "id": "n4",
+      "x": -1,
+      "y": -1
+    },
+    {
+      "id": "n5",
+      "x": -1,
+      "y": 0
+    },
+    {
+      "id": "n6",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "n7",
+      "x": 0,
+      "y": 1
+    },
+    {
+      "id": "n8",
+      "x": 1,
+      "y": 1
+    },
+    {
+      "id": "enemy_pivot",
+      "x": 3,
+      "y": 2
+    }
+  ],
+  "player": {
+    "pivotId": "n1",
+    "initialAngleDeg": -45,
+    "omegaDegSigned": 90,
+    "charges": 1
+  },
+  "exitNodeId": "n8",
+  "gravity": {
+    "x": 0,
+    "y": 0
+  },
+  "walls": [],
+  "bumpers": [],
+  "spikes": [],
+  "bonuses": [],
+  "enemies": [
+    {
+      "id": "spinner",
+      "pivotId": "enemy_pivot",
+      "initialAngleDeg": 45,
+      "omegaDegSigned": 90
+    }
+  ],
+  "doors": [],
+  "switches": [],
+  "teleporters": []
+}

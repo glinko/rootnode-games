@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "id": "training_01",
+  "title": "01 · Six hinges",
+  "bounds": {
+    "minX": -4,
+    "minY": -3,
+    "maxX": 5,
+    "maxY": 4
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "x": -3,
+      "y": -1
+    },
+    {
+      "id": "n2",
+      "x": -2,
+      "y": -1
+    },
+    {
+      "id": "n3",
+      "x": -2,
+      "y": 0
+    },
+    {
+      "id": "n4",
+      "x": -1,
+      "y": 0
+    },
+    {
+      "id": "n5",
+      "x": -1,
+      "y": 1
+    },
+    {
+      "id": "n6",
+      "x": 0,
+      "y": 1
+    }
+  ],
+  "player": {
+    "pivotId": "n1",
+    "initialAngleDeg": -45,
+    "omegaDegSigned": 90,
+    "charges": 1
+  },
+  "exitNodeId": "n6",
+  "gravity": {
+    "x": 0,
+    "y": 0
+  },
+  "walls": [],
+  "bumpers": [],
+  "spikes": [],
+  "bonuses": [],
+  "enemies": [],
+  "doors": [],
+  "switches": [],
+  "teleporters": []
+}

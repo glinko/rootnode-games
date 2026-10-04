@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "id": "training_09",
+  "title": "09 · Door, teleporter and bumper",
+  "bounds": {
+    "minX": -4,
+    "minY": -3,
+    "maxX": 5,
+    "maxY": 4
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "x": -3,
+      "y": 2
+    },
+    {
+      "id": "n2",
+      "x": -2,
+      "y": 2
+    },
+    {
+      "id": "n3",
+      "x": -2,
+      "y": 1
+    },
+    {
+      "id": "n4",
+      "x": -1,
+      "y": 1
+    },
+    {
+      "id": "n5",
+      "x": -1,
+      "y": 0
+    },
+    {
+      "id": "n6",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "n7",
+      "x": 0,
+      "y": -1
+    },
+    {
+      "id": "n8",
+      "x": 1,
+      "y": -1
+    },
+    {
+      "id": "n9",
+      "x": 1,
+      "y": -2
+    },
+    {
+      "id": "n10",
+      "x": 2,
+      "y": -2
+    },
+    {
+      "id": "spinner_pivot",
+      "x": 3,
+      "y": 2
+    },
+    {
+      "id": "patrol_a",
+      "x": 3,
+      "y": -2
+    },
+    {
+      "id": "patrol_b",
+      "x": 4,
+      "y": -2
+    },
+    {
+      "id": "patrol_c",
+      "x": 4,
+      "y": -1
+    }
+  ],
+  "player": {
+    "pivotId": "n1",
+    "initialAngleDeg": -45,
+    "omegaDegSigned": 90,
+    "charges": 1
+  },
+  "exitNodeId": "n10",
+  "gravity": {
+    "x": 0,
+    "y": 0
+  },
+  "walls": [],
+  "bumpers": [
+    {
+      "id": "spring_right",
+      "x1": 3,
+      "y1": -1,
+      "x2": 3,
+      "y2": 1,
+      "normalX": -1,
+      "normalY": 0
+    }
+  ],
+  "spikes": [
+    {
+      "id": "spike_gate",
+      "x": 2.8,
+      "y": 3.2,
+      "radius": 0.12
+    },
+    {
+      "id": "spike_finish",
+      "x": -3.2,
+      "y": -2.5,
+      "radius": 0.12
+    }
+  ],
+  "bonuses": [
+    {
+      "id": "bonus",
+      "x": -1.6,
+      "y": 2.55,
+      "radius": 0.13,
+      "chargesAdded": 1
+    }
+  ],
+  "enemies": [
+    {
+      "id": "spinner",
+      "pivotId": "spinner_pivot",
+      "initialAngleDeg": 90,
+      "omegaDegSigned": 90
+    },
+    {
+      "id": "patroller",
+      "pivotId": "patrol_a",
+      "initialAngleDeg": 0,
+      "omegaDegSigned": 0,
+      "pathNodeIds": [
+        "patrol_a",
+        "patrol_b",
+        "patrol_c"
+      ],
+      "pathSpeed": 1.4,
+      "pathLoop": false
+    }
+  ],
+  "doors": [
+    {
+      "id": "door_lower",
+      "x1": 0,
+      "y1": -2,
+      "x2": 2,
+      "y2": -2
+    }
+  ],
+  "switches": [
+    {
+      "id": "switch_lower",
+      "x": 0.45,
+      "y": 0,
+      "radius": 0.2,
+      "doorIds": [
+        "door_lower"
+      ],
+      "initialOn": false
+    }
+  ],
+  "teleporters": [
+    {
+      "id": "teleport_in",
+      "x": -3,
+      "y": -1.9,
+      "radius": 0.2,
+      "linkId": "advanced_pair"
+    },
+    {
+      "id": "teleport_out",
+      "x": 3.5,
+      "y": 2.6,
+      "radius": 0.2,
+      "linkId": "advanced_pair"
+    }
+  ]
+}
