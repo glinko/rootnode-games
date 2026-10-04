@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "id": "training_08",
+  "title": "08 · Two patrols and spike field",
+  "bounds": {
+    "minX": -4,
+    "minY": -3,
+    "maxX": 5,
+    "maxY": 4
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "x": -3,
+      "y": -1
+    },
+    {
+      "id": "n2",
+      "x": -2,
+      "y": -1
+    },
+    {
+      "id": "n3",
+      "x": -2,
+      "y": 0
+    },
+    {
+      "id": "n4",
+      "x": -1,
+      "y": 0
+    },
+    {
+      "id": "n5",
+      "x": -1,
+      "y": 1
+    },
+    {
+      "id": "n6",
+      "x": 0,
+      "y": 1
+    },
+    {
+      "id": "n7",
+      "x": 0,
+      "y": 2
+    },
+    {
+      "id": "n8",
+      "x": 1,
+      "y": 2
+    },
+    {
+      "id": "n9",
+      "x": 1,
+      "y": 3
+    },
+    {
+      "id": "n10",
+      "x": 2,
+      "y": 3
+    },
+    {
+      "id": "patrol_a",
+      "x": 3,
+      "y": -2
+    },
+    {
+      "id": "patrol_b",
+      "x": 4,
+      "y": -2
+    },
+    {
+      "id": "patrol_c",
+      "x": 4,
+      "y": -1
+    },
+    {
+      "id": "patrol_d",
+      "x": 3,
+      "y": 1
+    },
+    {
+      "id": "patrol_e",
+      "x": 4,
+      "y": 1
+    },
+    {
+      "id": "patrol_f",
+      "x": 4,
+      "y": 2
+    }
+  ],
+  "player": {
+    "pivotId": "n1",
+    "initialAngleDeg": -45,
+    "omegaDegSigned": 90,
+    "charges": 1
+  },
+  "exitNodeId": "n10",
+  "gravity": {
+    "x": 0,
+    "y": 0
+  },
+  "walls": [],
+  "bumpers": [],
+  "spikes": [
+    {
+      "id": "spike_one",
+      "x": -2.4,
+      "y": 1.55,
+      "radius": 0.12
+    },
+    {
+      "id": "spike_two",
+      "x": -0.55,
+      "y": 2.45,
+      "radius": 0.12
+    },
+    {
+      "id": "spike_three",
+      "x": 1.55,
+      "y": 1.35,
+      "radius": 0.12
+    }
+  ],
+  "bonuses": [
+    {
+      "id": "bonus",
+      "x": -1.65,
+      "y": -1.75,
+      "radius": 0.13,
+      "chargesAdded": 1
+    }
+  ],
+  "enemies": [
+    {
+      "id": "patroller_bottom",
+      "pivotId": "patrol_a",
+      "initialAngleDeg": 90,
+      "omegaDegSigned": 0,
+      "pathNodeIds": [
+        "patrol_a",
+        "patrol_b",
+        "patrol_c"
+      ],
+      "pathSpeed": 1.5,
+      "pathLoop": false
+    },
+    {
+      "id": "patroller_top",
+      "pivotId": "patrol_d",
+      "initialAngleDeg": 0,
+      "omegaDegSigned": 0,
+      "pathNodeIds": [
+        "patrol_d",
+        "patrol_e",
+        "patrol_f"
+      ],
+      "pathSpeed": 1.1,
+      "pathLoop": false
+    }
+  ],
+  "doors": [],
+  "switches": [],
+  "teleporters": []
+}

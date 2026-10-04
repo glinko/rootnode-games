@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 540" role="img" aria-labelledby="title desc">
+  <title id="title">ClockShift cover</title><desc id="desc">A turquoise clockwork board with a glowing arrow crossing brass hinges.</desc>
+  <defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#123e49"/><stop offset="1" stop-color="#061d25"/></linearGradient><linearGradient id="gold"><stop stop-color="#ffe59a"/><stop offset=".5" stop-color="#bd7b25"/><stop offset="1" stop-color="#fff0ad"/></linearGradient></defs>
+  <rect width="880" height="540" fill="#04151b"/><circle cx="74" cy="62" r="120" fill="#c1873527"/><circle cx="819" cy="465" r="140" fill="#c1873525"/>
+  <path d="M58 60h764v420H58z" rx="22" fill="url(#bg)" stroke="#e1ae52" stroke-width="8"/><path d="M79 82h722v376H79z" fill="none" stroke="#8b5d2b" stroke-width="3"/>
+  <g fill="url(#gold)" stroke="#704718" stroke-width="3"><circle cx="190" cy="355" r="19"/><circle cx="380" cy="235" r="19"/><circle cx="570" cy="355" r="19"/><circle cx="690" cy="190" r="19"/></g>
+  <path d="M190 355 380 235 570 355 690 190" fill="none" stroke="#39d8df" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity=".25"/><path d="M190 355 380 235" fill="none" stroke="#39d8df" stroke-width="13" stroke-linecap="round"/><path d="M380 235 493 302" fill="none" stroke="#ef6758" stroke-width="13" stroke-linecap="round"/><path d="m486 286 29 15-23 22" fill="#ef6758"/>
+  <g fill="#51e981" stroke="#eaffbd" stroke-width="4"><circle cx="690" cy="190" r="13"/></g>
+  <text x="88" y="128" fill="#ffe8a1" font-family="system-ui,sans-serif" font-size="28" font-weight="800" letter-spacing="6">CLOCKSHIFT</text><text x="88" y="165" fill="#91bdb7" font-family="system-ui,sans-serif" font-size="16" letter-spacing="3">ROTATE · RELEASE · CAPTURE</text>
+</svg>

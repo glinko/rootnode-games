@@ -8,5 +8,15 @@
     "cover": "cover.svg",
     "author": "glinko",
     "license": "MIT"
+  },
+  {
+    "slug": "clockshift",
+    "title": "ClockShift",
+    "description": "Rotate, reverse, release and capture a rigid arrow across a clockwork hinge grid.",
+    "category": "Puzzle",
+    "platform": "Mobile",
+    "cover": "cover.svg",
+    "author": "glinko",
+    "license": "MIT"
   }
 ]

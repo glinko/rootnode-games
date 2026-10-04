@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "id": "training_03",
+  "title": "03 · Patrol and first spikes",
+  "bounds": {
+    "minX": -4,
+    "minY": -3,
+    "maxX": 5,
+    "maxY": 4
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "x": -3,
+      "y": 2
+    },
+    {
+      "id": "n2",
+      "x": -2,
+      "y": 2
+    },
+    {
+      "id": "n3",
+      "x": -2,
+      "y": 1
+    },
+    {
+      "id": "n4",
+      "x": -1,
+      "y": 1
+    },
+    {
+      "id": "n5",
+      "x": -1,
+      "y": 0
+    },
+    {
+      "id": "n6",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "n7",
+      "x": 0,
+      "y": -1
+    },
+    {
+      "id": "n8",
+      "x": 1,
+      "y": -1
+    },
+    {
+      "id": "patrol_a",
+      "x": 3,
+      "y": 2
+    },
+    {
+      "id": "patrol_b",
+      "x": 4,
+      "y": 2
+    },
+    {
+      "id": "patrol_c",
+      "x": 4,
+      "y": 3
+    }
+  ],
+  "player": {
+    "pivotId": "n1",
+    "initialAngleDeg": -45,
+    "omegaDegSigned": 90,
+    "charges": 1
+  },
+  "exitNodeId": "n8",
+  "gravity": {
+    "x": 0,
+    "y": 0
+  },
+  "walls": [],
+  "bumpers": [],
+  "spikes": [
+    {
+      "id": "spike_left",
+      "x": -0.8,
+      "y": 2.8,
+      "radius": 0.12
+    },
+    {
+      "id": "spike_right",
+      "x": 1.5,
+      "y": -1.8,
+      "radius": 0.12
+    }
+  ],
+  "bonuses": [
+    {
+      "id": "bonus",
+      "x": -2.45,
+      "y": 0.55,
+      "radius": 0.13,
+      "chargesAdded": 1
+    }
+  ],
+  "enemies": [
+    {
+      "id": "patroller",
+      "pivotId": "patrol_a",
+      "initialAngleDeg": 90,
+      "omegaDegSigned": 0,
+      "pathNodeIds": [
+        "patrol_a",
+        "patrol_b",
+        "patrol_c"
+      ],
+      "pathSpeed": 1.1,
+      "pathLoop": false
+    }
+  ],
+  "doors": [],
+  "switches": [],
+  "teleporters": []
+}

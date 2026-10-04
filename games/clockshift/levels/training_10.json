@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "id": "training_10",
+  "title": "10 · Flight across the gap",
+  "bounds": {
+    "minX": -4,
+    "minY": -3,
+    "maxX": 5,
+    "maxY": 4
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "x": -3,
+      "y": -2
+    },
+    {
+      "id": "n2",
+      "x": -2,
+      "y": -2
+    },
+    {
+      "id": "n3",
+      "x": -2,
+      "y": -1
+    },
+    {
+      "id": "n4",
+      "x": -1,
+      "y": -1
+    },
+    {
+      "id": "n5",
+      "x": -1,
+      "y": 0
+    },
+    {
+      "id": "n6",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "flight_exit",
+      "x": 3,
+      "y": 0
+    }
+  ],
+  "player": {
+    "pivotId": "n1",
+    "initialAngleDeg": -45,
+    "omegaDegSigned": 90,
+    "charges": 1
+  },
+  "exitNodeId": "flight_exit",
+  "gravity": {
+    "x": 0,
+    "y": 0
+  },
+  "walls": [],
+  "bumpers": [
+    {
+      "id": "spring_landing",
+      "x1": 2,
+      "y1": 1,
+      "x2": 4,
+      "y2": 1,
+      "normalX": 0,
+      "normalY": -1
+    }
+  ],
+  "spikes": [
+    {
+      "id": "spike_launch",
+      "x": -0.35,
+      "y": 1.1,
+      "radius": 0.12
+    },
+    {
+      "id": "spike_landing",
+      "x": 2.25,
+      "y": -0.65,
+      "radius": 0.12
+    }
+  ],
+  "bonuses": [
+    {
+      "id": "bonus",
+      "x": -0.3,
+      "y": -2.55,
+      "radius": 0.13,
+      "chargesAdded": 1
+    }
+  ],
+  "enemies": [],
+  "doors": [],
+  "switches": [],
+  "teleporters": []
+}
