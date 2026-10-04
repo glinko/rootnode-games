@@ -286,8 +286,8 @@ function writeLocalRow(row) {
   try { localStorage.setItem('clockshift.customLevels.v1', JSON.stringify(rows.slice(-200))); } catch (_) { /* private mode */ }
 }
 
-function mergeRows(rows) {
-  const map = new Map(); [...localRows(), ...(Array.isArray(rows) ? rows : [])].forEach(row => { if (row && row.id && row.level) map.set(row.id, row); });
+function mergeRows(rows, remoteIsAuthoritative = false) {
+  const map = new Map(); [...(remoteIsAuthoritative ? [] : localRows()), ...(Array.isArray(rows) ? rows : [])].forEach(row => { if (row && row.id && row.level) map.set(row.id, row); });
   savedRows = [...map.values()].sort((a, b) => String(a.level.title || a.id).localeCompare(String(b.level.title || b.id), 'ru'));
   const select = $('saved-levels'); select.textContent = '';
   if (!savedRows.length) { const option = document.createElement('option'); option.value = ''; option.textContent = 'Пока нет сохранённых уровней'; select.append(option); return; }
@@ -297,8 +297,9 @@ function mergeRows(rows) {
 
 async function refreshRows() {
   let remote = [];
-  try { const response = await fetch(API, { cache: 'no-store' }); if (response.ok) { const payload = await response.json(); remote = Array.isArray(payload) ? payload : payload.levels || []; } } catch (_) { /* local fallback is intentional */ }
-  mergeRows(remote);
+  let remoteIsAuthoritative = false;
+  try { const response = await fetch(API, { cache: 'no-store' }); if (response.ok) { const payload = await response.json(); remote = Array.isArray(payload) ? payload : payload.levels || []; remoteIsAuthoritative = true; } } catch (_) { /* local fallback is intentional */ }
+  mergeRows(remote, remoteIsAuthoritative);
   const requested = new URLSearchParams(window.location.search).get('id'); if (requested) { const row = savedRows.find(item => item.id === requested); if (row) loadRow(row); }
 }
 
