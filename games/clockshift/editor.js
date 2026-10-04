@@ -17,6 +17,7 @@ let draft = starterLevel();
 let tool = 'select';
 let pointerStart = null;
 let pointerCurrent = null;
+let pathDraft = null;
 let savedRows = [];
 let editingId = '';
 let frame = { x: 0, y: 0, width: 1, height: 1, scale: 1 };
@@ -58,6 +59,7 @@ function setStatus(message, error = false) {
 function setHint(message) { $('editor-hint').textContent = message; }
 
 function setTool(next) {
+  if (tool === 'path' && next !== 'path' && pathDraft) finishPath(false);
   tool = next;
   document.querySelectorAll('.tool-button').forEach(button => button.classList.toggle('active', button.dataset.tool === tool));
   const hints = {
@@ -66,6 +68,7 @@ function setTool(next) {
     player: 'Игрок: нажмите на шарнир, с которого должна начинаться стрелка.',
     exit: 'Выход: нажмите на шарнир, который станет конечным.',
     enemy: 'Враг: нажмите на шарнир. Враг будет вращаться на нём по часовой стрелке.',
+    path: 'Путь врага: нажмите на шарнир врага, затем последовательно нажмите соседние шарниры. Нажмите Enter для завершения.',
     wall: 'Стена: протяните от одного пересечения сетки до другого.',
     bumper: 'Бампер: протяните от одного пересечения сетки до другого; стрелка будет отбиваться.',
     door: 'Дверь: протяните от одного пересечения сетки до другого. Первый переключатель свяжется с ней.',
@@ -139,7 +142,33 @@ function addFree(kind, point) {
 
 function addEnemy(point) {
   const node = requireNode(point); if (!node) return;
+  if (draft.enemies.some(enemy => enemy.pivotId === node.id)) { setStatus('На этом шарнире уже есть враг.', true); return; }
   draft.enemies.push({ id: nextId('enemy_', draft.enemies), pivotId: node.id, initialAngleDeg: -45, omegaDegSigned: 90 });
+}
+
+function addPathPoint(point) {
+  const node = nodeAt(snapPoint(point), .36);
+  if (!node) { setHint('Путь врага строится только через существующие шарниры.'); return; }
+  if (!pathDraft) {
+    const enemy = draft.enemies.find(item => item.pivotId === node.id);
+    if (!enemy) { setHint('Сначала нажмите на шарнир, к которому прикреплена красная стрелка.'); return; }
+    pathDraft = { enemyId: enemy.id, ids: [node.id] };
+    setHint('Маршрут начат. Нажимайте следующие шарниры, затем Enter.'); draw(); return;
+  }
+  if (node.id === pathDraft.ids[pathDraft.ids.length - 1]) return;
+  if (node.id === pathDraft.ids[0] && pathDraft.ids.length >= 3) { finishPath(true); return; }
+  if (pathDraft.ids.includes(node.id)) { setHint('Шарнир уже есть в этом маршруте. Выберите следующий.'); return; }
+  pathDraft.ids.push(node.id); setHint('Маршрут: ' + pathDraft.ids.length + ' шарнира(ов). Нажмите Enter для сохранения.'); draw();
+}
+
+function finishPath(showMessage = true) {
+  if (!pathDraft) return;
+  const enemy = draft.enemies.find(item => item.id === pathDraft.enemyId);
+  if (enemy && pathDraft.ids.length >= 2) {
+    enemy.pathNodeIds = [...pathDraft.ids]; enemy.pathSpeed = Number(enemy.pathSpeed) > 0 ? enemy.pathSpeed : 1.2;
+    if (showMessage) setStatus('Маршрут врага сохранён: ' + pathDraft.ids.length + ' шарнира(ов).');
+  } else if (showMessage) setStatus('Для маршрута нужны начальный и конечный шарниры.', true);
+  pathDraft = null; draw();
 }
 
 function eraseAt(point) {
@@ -172,6 +201,7 @@ function distanceToSegment(point, a, b) {
 function applyPointAction(point) {
   if (tool === 'select') return;
   if (tool === 'erase') { eraseAt(point); draw(); return; }
+  if (tool === 'path') { addPathPoint(point); return; }
   if (tool === 'hinge') addNode(point);
   if (tool === 'player') { const node = requireNode(point); if (node) draft.player.pivotId = node.id; }
   if (tool === 'exit') { const node = requireNode(point); if (node) draft.exitNodeId = node.id; }
@@ -243,9 +273,22 @@ function draw() {
   draft.teleporters.forEach(item => { const p = screenPoint(item); const r = Math.max(8, frame.scale * .2); ctx.strokeStyle = '#72d9ed'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = '#8be9f3'; ctx.beginPath(); ctx.arc(p.x, p.y, r * .28, 0, Math.PI * 2); ctx.fill(); });
   draft.enemies.forEach(enemy => drawArrow(ctx, enemy, '#ef6554', enemy.pivotId)); drawArrow(ctx, draft.player, '#29d7dc', draft.player.pivotId);
   draft.nodes.forEach(node => { const exit = node.id === draft.exitNodeId; drawCircle(ctx, node, exit ? '#51e783' : '#d29d43', exit ? .075 : .06, exit ? 'E' : ''); });
+  drawEnemyPaths(ctx);
   if (pointerStart && pointerCurrent && ['wall', 'bumper', 'door'].includes(tool)) {
     const a = screenPoint(snapPoint(pointerStart)); const b = screenPoint(snapPoint(pointerCurrent)); ctx.setLineDash([8, 6]); ctx.strokeStyle = '#f6e4a1'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.setLineDash([]);
   }
+}
+
+function drawEnemyPaths(ctx) {
+  const drawPath = (ids, color, active = false) => {
+    if (!ids || ids.length < 2) return;
+    ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = active ? 4 : 2.5; ctx.setLineDash(active ? [10, 5] : [6, 6]); ctx.lineCap = 'round'; ctx.beginPath();
+    ids.forEach((id, index) => { const node = draft.nodes.find(item => item.id === id); if (!node) return; const p = screenPoint(node); if (index === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); }); ctx.stroke(); ctx.setLineDash([]);
+    ids.forEach((id, index) => { const node = draft.nodes.find(item => item.id === id); if (!node) return; const p = screenPoint(node); ctx.fillStyle = color; ctx.beginPath(); ctx.arc(p.x, p.y, active ? 7 : 5, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#061a21'; ctx.font = '700 10px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(index + 1), p.x, p.y); });
+    ctx.restore();
+  };
+  draft.enemies.forEach(enemy => drawPath(enemy.pathNodeIds, '#ef6554', pathDraft && pathDraft.enemyId === enemy.id));
+  if (pathDraft) drawPath(pathDraft.ids, '#ffe080', true);
 }
 
 function pointerDown(event) {
@@ -305,7 +348,7 @@ async function refreshRows() {
 
 function loadRow(row) {
   if (!row || !row.level) return;
-  editingId = row.id; draft = clone(row.level); ensureDraft(); $('level-title').value = draft.title || row.id; $('player-charges').value = draft.player.charges ?? 1; $('player-angle').value = draft.player.initialAngleDeg ?? -45; $('player-speed').value = draft.player.omegaDegSigned ?? 90; $('saved-levels').value = row.id; setStatus('Открыт уровень «' + draft.title + '».'); draw();
+  pathDraft = null; editingId = row.id; draft = clone(row.level); ensureDraft(); $('level-title').value = draft.title || row.id; $('player-charges').value = draft.player.charges ?? 1; $('player-angle').value = draft.player.initialAngleDeg ?? -45; $('player-speed').value = draft.player.omegaDegSigned ?? 90; $('saved-levels').value = row.id; setStatus('Открыт уровень «' + draft.title + '».'); draw();
 }
 
 async function saveLevel() {
@@ -329,8 +372,9 @@ function init() {
   document.querySelectorAll('.tool-button').forEach(button => button.addEventListener('click', () => setTool(button.dataset.tool)));
   $('editor-board').addEventListener('pointerdown', pointerDown); $('editor-board').addEventListener('pointermove', pointerMove); $('editor-board').addEventListener('pointerup', pointerUp); $('editor-board').addEventListener('pointercancel', pointerUp);
   $('save-level').addEventListener('click', saveLevel); $('load-level').addEventListener('click', () => { const row = savedRows.find(item => item.id === $('saved-levels').value); if (row) loadRow(row); });
-  $('new-level').addEventListener('click', () => { editingId = ''; draft = starterLevel(); updateFormFromDraft(); setStatus('Создан новый черновик.'); draw(); });
+  $('new-level').addEventListener('click', () => { pathDraft = null; editingId = ''; draft = starterLevel(); updateFormFromDraft(); setStatus('Создан новый черновик.'); draw(); });
   $('play-level').addEventListener('click', () => { try { const row = buildRow(); writeLocalRow(row); window.location.href = 'index.html?level=' + encodeURIComponent(row.id); } catch (error) { setStatus(error.message, true); } });
+  document.addEventListener('keydown', event => { if (event.key === 'Enter' && tool === 'path') { event.preventDefault(); finishPath(true); } if (event.key === 'Escape' && pathDraft) { event.preventDefault(); pathDraft = null; setHint('Маршрут отменён.'); draw(); } });
   window.addEventListener('resize', resizeCanvas); if (window.ResizeObserver) new ResizeObserver(resizeCanvas).observe($('editor-board'));
   resizeCanvas(); refreshRows();
 }
