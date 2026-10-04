@@ -21,9 +21,11 @@ Free flight has no action buttons: either end automatically captures a hinge.
 Progress is stored in `localStorage` under a versioned ClockShift key.
 
 Use **Editor** in the game footer to open the visual authoring screen. Hinge,
-player, exit, enemy, wall, bumper, door, spike, bonus, switch and teleporter
-tools write the same JSON schema as the training campaign. Saving keeps a local
-copy and also posts the level to the same-origin ClockShift level API when the
-host provides it; published levels are then shown in the game's Levels dialog.
+player, exit, enemy, enemy route, wall, bumper, door, spike, bonus, switch and
+teleporter tools write the same JSON schema as the training campaign. A route
+starts at an enemy hinge and is completed by pressing Enter after selecting the
+next hinges. Saving keeps a local copy and also posts the level to the
+same-origin ClockShift level API when the host provides it; published levels
+are then shown in the game's Levels dialog.
 The public editor has no account system, so anyone with access to the host can
 create or update a level.

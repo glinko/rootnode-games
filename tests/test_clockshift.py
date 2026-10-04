@@ -45,7 +45,7 @@ class ClockShiftAssetTests(unittest.TestCase):
         self.assertTrue((editor / "editor.js").is_file())
         self.assertIn('id="editor-open"', (editor / "index.html").read_text(encoding="utf-8"))
         editor_source = (editor / "editor.html").read_text(encoding="utf-8") + (editor / "editor.js").read_text(encoding="utf-8")
-        for token in ("/api/clockshift/levels", "Сохранить уровень", "data-tool=", "localStorage"):
+        for token in ("/api/clockshift/levels", "Сохранить уровень", "Путь врага", "data-tool=", "localStorage"):
             self.assertIn(token, editor_source)
 
 
