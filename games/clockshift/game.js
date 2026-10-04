@@ -22,6 +22,7 @@ const CFG = Object.freeze({
 
 let canvas;
 let campaign = [];
+let customLevels = [];
 let levelIndex = 0;
 let sim = null;
 let accumulator = 0;
@@ -137,6 +138,41 @@ function saveProgress() {
   try { localStorage.setItem('clockshift.progress.v1', JSON.stringify(progress)); } catch (_) { /* private browsing may deny storage */ }
 }
 
+function readLocalCustomLevels() {
+  try {
+    const raw = JSON.parse(localStorage.getItem('clockshift.customLevels.v1') || '[]');
+    return Array.isArray(raw) ? raw : [];
+  } catch (_) { return []; }
+}
+
+function validateCustomRow(row) {
+  if (!row || typeof row !== 'object' || !row.level || typeof row.level !== 'object') return null;
+  const level = { ...row.level, id: String(row.id || row.level.id || '') };
+  if (!level.id || level.id.startsWith('training_')) return null;
+  try {
+    validateLevel(level);
+    level.source = 'custom';
+    level.title = String(level.title || 'Community level').slice(0, 80);
+    return level;
+  } catch (_) { return null; }
+}
+
+async function loadCustomLevels() {
+  const localRows = readLocalCustomLevels();
+  let remoteRows = [];
+  try {
+    const response = await fetch('/api/clockshift/levels', { cache: 'no-store' });
+    if (response.ok) {
+      const payload = await response.json();
+      remoteRows = Array.isArray(payload) ? payload : Array.isArray(payload.levels) ? payload.levels : [];
+    }
+  } catch (_) { /* a static preview can continue with its local cache */ }
+  const merged = new Map();
+  [...localRows, ...remoteRows].forEach(row => { if (row && row.id) merged.set(row.id, row); });
+  customLevels = [...merged.values()].map(validateCustomRow).filter(Boolean);
+  return customLevels;
+}
+
 async function loadCampaign() {
   try {
     const files = Array.from({ length: 10 }, (_, index) => 'levels/training_' + String(index + 1).padStart(2, '0') + '.json');
@@ -145,7 +181,11 @@ async function loadCampaign() {
       return response.json();
     })));
     campaign = loaded.map(validateLevel);
-    levelIndex = clamp(progress.last, 0, campaign.length - 1);
+    await loadCustomLevels();
+    campaign = campaign.concat(customLevels);
+    const requestedId = new URLSearchParams(window.location.search).get('level');
+    const requestedIndex = requestedId ? campaign.findIndex(level => level.id === requestedId) : -1;
+    levelIndex = requestedIndex >= 0 ? requestedIndex : clamp(progress.last, 0, campaign.length - 1);
     buildLevelList();
     resetLevel();
   } catch (error) {
@@ -693,12 +733,12 @@ function draw() {
 
 function updateHud() {
   if (!sim || !campaign.length) return;
-  const level = sim.level; const complete = progress.completed.includes(level.id);
-  $('level-number').textContent = 'TRAINING ' + String(levelIndex + 1).padStart(2, '0');
+  const level = sim.level; const complete = progress.completed.includes(level.id); const custom = level.source === 'custom';
+  $('level-number').textContent = custom ? 'COMMUNITY' : 'TRAINING ' + String(levelIndex + 1).padStart(2, '0');
   $('level-title').textContent = level.title;
   $('timer').textContent = formatTime(sim.time);
   $('charges').textContent = String(sim.charges);
-  $('mode-label').textContent = 'TRAINING · ' + (levelIndex + 1) + ' / ' + campaign.length + (complete ? ' · CLEARED' : '');
+  $('mode-label').textContent = (custom ? 'COMMUNITY' : 'TRAINING') + ' · ' + (levelIndex + 1) + ' / ' + campaign.length + (complete ? ' · CLEARED' : '');
   $('hint').textContent = sim.paused ? 'Simulation paused. Press pause again to continue.' : hintForLevel(level);
   // Keep the rendered model and the DOM state in sync; this also makes a
   // missing level asset immediately visible during static-host smoke tests.
@@ -727,7 +767,7 @@ function buildLevelList() {
   campaign.forEach((level, index) => {
     const button = document.createElement('button'); button.type = 'button'; button.className = 'level-row' + (index === levelIndex ? ' current' : '');
     const number = document.createElement('b'); number.textContent = String(index + 1).padStart(2, '0');
-    const copy = document.createElement('span'); const title = document.createElement('strong'); title.textContent = level.title; const note = document.createElement('small'); note.textContent = progress.completed.includes(level.id) ? 'Cleared' : level.enemies.length ? 'Hazards active' : 'Training'; copy.append(title, note);
+    const copy = document.createElement('span'); const title = document.createElement('strong'); title.textContent = level.title; const note = document.createElement('small'); note.textContent = level.source === 'custom' ? 'Community level' : progress.completed.includes(level.id) ? 'Cleared' : level.enemies.length ? 'Hazards active' : 'Training'; copy.append(title, note);
     const marker = document.createElement('span'); marker.textContent = progress.completed.includes(level.id) ? '✓' : '›'; marker.setAttribute('aria-hidden', 'true'); button.append(number, copy, marker);
     button.addEventListener('click', () => { levelIndex = index; progress.last = index; saveProgress(); resetLevel(); buildLevelList(); $('levels-dialog').close(); }); list.append(button);
   });

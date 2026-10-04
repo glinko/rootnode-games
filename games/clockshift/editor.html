@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#092731">
+  <title>ClockShift · Редактор</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="editor-page">
+  <main class="editor-app">
+    <header class="editor-hud">
+      <div class="brand"><span class="eyebrow">ROOTNODE ARCADE</span><h1>ClockShift · Редактор</h1></div>
+      <div class="editor-hud-actions">
+        <a class="levels-button" href="index.html">Игра</a>
+        <button id="save-level" class="primary-button" type="button">Сохранить уровень</button>
+      </div>
+    </header>
+
+    <section class="editor-controls" aria-label="Параметры и инструменты редактора">
+      <div class="editor-fields">
+        <label>Название уровня<input id="level-title" type="text" maxlength="80" value="Новый уровень" autocomplete="off"></label>
+        <label>Заряды<input id="player-charges" type="number" min="0" max="9" step="1" value="1"></label>
+        <label>Угол старта<input id="player-angle" type="number" min="-360" max="360" step="15" value="-45"></label>
+        <label>Скорость<input id="player-speed" type="number" min="-360" max="360" step="15" value="90"></label>
+      </div>
+      <div class="palette" aria-label="Инструменты">
+        <button class="tool-button active" data-tool="select" type="button">Выбор</button>
+        <button class="tool-button" data-tool="hinge" type="button">Шарнир</button>
+        <button class="tool-button" data-tool="player" type="button">Игрок</button>
+        <button class="tool-button" data-tool="exit" type="button">Выход</button>
+        <button class="tool-button" data-tool="enemy" type="button">Враг</button>
+        <button class="tool-button" data-tool="wall" type="button">Стена</button>
+        <button class="tool-button" data-tool="bumper" type="button">Бампер</button>
+        <button class="tool-button" data-tool="door" type="button">Дверь</button>
+        <button class="tool-button" data-tool="spike" type="button">Шип</button>
+        <button class="tool-button" data-tool="bonus" type="button">Бонус</button>
+        <button class="tool-button" data-tool="switch" type="button">Переключатель</button>
+        <button class="tool-button" data-tool="teleporter" type="button">Телепорт</button>
+        <button class="tool-button danger" data-tool="erase" type="button">Удалить</button>
+      </div>
+      <p id="editor-hint" class="editor-hint">Выберите инструмент и нажмите на поле. Шарниры, стены и двери ставятся по сетке; бонусы и ловушки — в любом месте.</p>
+    </section>
+
+    <section class="editor-workspace">
+      <div class="editor-board-wrap">
+        <canvas id="editor-board" aria-label="Поле редактора ClockShift"></canvas>
+        <div class="board-caption">Стандартная сетка 9 × 7 · вертикальный экран масштабирует то же поле</div>
+      </div>
+      <aside class="editor-sidebar">
+        <span class="eyebrow">СЕРВЕРНЫЕ УРОВНИ</span>
+        <h2>Мои и опубликованные уровни</h2>
+        <select id="saved-levels" aria-label="Сохранённые уровни">
+          <option value="">Загрузка…</option>
+        </select>
+        <div class="sidebar-actions">
+          <button id="load-level" class="levels-button" type="button">Открыть</button>
+          <button id="new-level" class="levels-button" type="button">Новый</button>
+        </div>
+        <p id="save-status" class="save-status" role="status">Уровень можно сохранить локально и на общий сервер.</p>
+        <div class="editor-help">
+          <strong>Быстрый порядок</strong>
+          <ol>
+            <li>Поставьте два или больше шарниров.</li>
+            <li>Назначьте один шарнир игроком, другой — выходом.</li>
+            <li>Добавьте препятствия и нажмите «Сохранить уровень».</li>
+          </ol>
+        </div>
+        <button id="play-level" class="primary-button wide-button" type="button">Играть этот уровень</button>
+      </aside>
+    </section>
+  </main>
+  <script src="editor.js"></script>
+</body>
+</html>

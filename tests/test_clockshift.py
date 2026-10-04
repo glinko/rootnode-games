@@ -39,6 +39,15 @@ class ClockShiftAssetTests(unittest.TestCase):
         for token in ("CFG.step", "reversePlayer", "releasePlayer", "requestCapture", "autoCapture", "localStorage", "stepFree"):
             self.assertIn(token, source)
 
+    def test_public_editor_and_shared_level_hooks_are_present(self):
+        editor = ROOT / "games" / "clockshift"
+        self.assertTrue((editor / "editor.html").is_file())
+        self.assertTrue((editor / "editor.js").is_file())
+        self.assertIn('id="editor-open"', (editor / "index.html").read_text(encoding="utf-8"))
+        editor_source = (editor / "editor.html").read_text(encoding="utf-8") + (editor / "editor.js").read_text(encoding="utf-8")
+        for token in ("/api/clockshift/levels", "Сохранить уровень", "data-tool=", "localStorage"):
+            self.assertIn(token, editor_source)
+
 
 if __name__ == "__main__":
     unittest.main()

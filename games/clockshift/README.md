@@ -20,6 +20,10 @@ teleporters, and a flight finish.
 Free flight has no action buttons: either end automatically captures a hinge.
 Progress is stored in `localStorage` under a versioned ClockShift key.
 
-The first p5.js port keeps the first-prototype scope from the spec. There is no
-network, account, server level database, leaderboard, or editor in this static
-game package. User-created level authoring is a later stage of the specification.
+Use **Editor** in the game footer to open the visual authoring screen. Hinge,
+player, exit, enemy, wall, bumper, door, spike, bonus, switch and teleporter
+tools write the same JSON schema as the training campaign. Saving keeps a local
+copy and also posts the level to the same-origin ClockShift level API when the
+host provides it; published levels are then shown in the game's Levels dialog.
+The public editor has no account system, so anyone with access to the host can
+create or update a level.
